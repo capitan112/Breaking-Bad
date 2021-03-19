@@ -54,7 +54,7 @@ class CharactersViewController: UIViewController, Storyboarded {
     }
 
     private func setupBindings() {
-        viewModel?.reload.bind { _ in
+        viewModel?.reload.bind { [unowned self] _ in
             self.reloadTableView()
         }
     }
