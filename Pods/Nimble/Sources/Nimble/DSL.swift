@@ -4,8 +4,7 @@ public func expect<T>(file: FileString = #file, line: UInt = #line, _ expression
         expression: Expression(
             expression: expression,
             location: SourceLocation(file: file, line: line),
-            isClosure: true
-        ))
+            isClosure: true))
 }
 
 /// Make an expectation on a given actual value. The closure is lazily invoked.
@@ -14,8 +13,7 @@ public func expect<T>(file: FileString = #file, line: UInt = #line, _ expression
         expression: Expression(
             expression: expression(),
             location: SourceLocation(file: file, line: line),
-            isClosure: true
-        ))
+            isClosure: true))
 }
 
 /// Make an expectation on a given actual value. The closure is lazily invoked.
@@ -24,8 +22,7 @@ public func expect<T>(file: FileString = #file, line: UInt = #line, _ expression
         expression: Expression(
             expression: expression(),
             location: SourceLocation(file: file, line: line),
-            isClosure: true
-        ))
+            isClosure: true))
 }
 
 /// Make an expectation on a given actual value. The closure is lazily invoked.
@@ -34,8 +31,7 @@ public func expect(file: FileString = #file, line: UInt = #line, _ expression: @
         expression: Expression(
             expression: expression(),
             location: SourceLocation(file: file, line: line),
-            isClosure: true
-        ))
+            isClosure: true))
 }
 
 /// Always fails the test with a message and a specified location.
@@ -80,29 +76,29 @@ internal func internalError(_ msg: String, file: FileString = #file, line: UInt 
 }
 
 #if canImport(Darwin)
-    import class Foundation.NSException
-    import struct Foundation.NSExceptionName
+import class Foundation.NSException
+import struct Foundation.NSExceptionName
 
-    private func _nimblePrecondition(
-        _ name: String,
-        _ message: String,
-        _: StaticString,
-        _: UInt
-    ) {
-        let exception = NSException(
-            name: NSExceptionName(name),
-            reason: message,
-            userInfo: nil
-        )
-        exception.raise()
-    }
+private func _nimblePrecondition(
+    _ name: String,
+    _ message: String,
+    _ file: StaticString,
+    _ line: UInt
+) {
+    let exception = NSException(
+        name: NSExceptionName(name),
+        reason: message,
+        userInfo: nil
+    )
+    exception.raise()
+}
 #else
-    private func _nimblePrecondition(
-        _ name: String,
-        _ message: String,
-        _ file: StaticString,
-        _ line: UInt
-    ) {
-        preconditionFailure("\(name) - \(message)", file: file, line: line)
-    }
+private func _nimblePrecondition(
+    _ name: String,
+    _ message: String,
+    _ file: StaticString,
+    _ line: UInt
+) {
+    preconditionFailure("\(name) - \(message)", file: file, line: line)
+}
 #endif

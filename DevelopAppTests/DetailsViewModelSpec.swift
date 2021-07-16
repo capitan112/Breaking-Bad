@@ -5,69 +5,77 @@
 //  Created by Oleksiy Chebotarov on 17/03/2021.
 //
 
+
 @testable import DevelopApp
 import Foundation
 import Nimble
 import Quick
 
-class DetailsViewModelSpec: QuickSpec {
-    override func spec() {
-        var subject: DetailsViewModelType!
-        var characters: [Character]!
+enum JsonDecodingError: Error {
+    case invalidFormat
+}
 
+class DetailsViewModelSpec: QuickSpec {
+    var subject: DetailsViewModelType!
+    var characters: [Character]!
+    var localDataFetcher: NetworkDataFetcher!
+    
+    override func spec() {
         describe("fetch characters in ViewModel") {
             context("should get real data of list of characters") {
                 beforeEach {
-                    characters = self.fetchJSON(json: charactersJson)
+                    let networkServiceLocal = NetworkServiceLocal(json: charactersJson)
+                    self.localDataFetcher = NetworkDataFetcher(networkingService: networkServiceLocal)
+                    self.localDataFetcher.fetchDetails { response in
+                        switch response {
+                        case let .success(characters):
+                            self.characters = characters
+                        case let .failure(error):
+                            debugPrint(error.localizedDescription)
+                        }
+                    }
                 }
 
                 afterEach {
-                    subject = nil
-                    characters = nil
+                    self.subject = nil
+                    self.characters = nil
+                    self.localDataFetcher = nil
                 }
 
                 it("first characters properties should be equal") {
-                    guard let character = characters.first else {
+                    guard let character = self.characters.first else {
                         fail()
                         return
                     }
-                    subject = DetailsViewModel(character: character)
+                    self.subject = DetailsViewModel(character: character)
                     let url = URL(string: "https://images.amcnetworks.com/amc.com/wp-content/uploads/2015/04/cast_bb_700x1000_walter-white-lg.jpg")!
-                    expect(subject.imageURL).to(equal(url))
-                    expect(subject.name).to(equal("Walter White"))
+                    expect(self.subject.imageURL).to(equal(url))
+                    expect(self.subject.name).to(equal("Walter White"))
                     let occupation = character.occupation.joined(separator: "\n")
-                    expect(subject.occupation).to(equal(occupation))
-                    expect(subject.status).to(equal("Status: Presumed dead"))
-                    expect(subject.nickname).to(equal("Nickname: Heisenberg"))
-                    expect(subject.seasonAppearance).to(equal("Season appearance: \n1, 2, 3, 4, 5"))
+                    expect(self.subject.occupation).to(equal(occupation))
+                    expect(self.subject.status).to(equal("Status: Presumed dead"))
+                    expect(self.subject.nickname).to(equal("Nickname: Heisenberg"))
+                    expect(self.subject.seasonAppearance).to(equal("Season appearance: \n1, 2, 3, 4, 5"))
                 }
 
                 it("last movies properties should be equal") {
-                    guard let expectedCharacter = characters.last else {
+                    guard let expectedCharacter = self.characters.last else {
                         fail()
                         return
                     }
-                    subject = DetailsViewModel(character: expectedCharacter)
+                    self.subject = DetailsViewModel(character: expectedCharacter)
                     let url = URL(string: "https://vignette.wikia.nocookie.net/breakingbad/images/9/95/JesseS5.jpg/revision/latest?cb=20120620012441")!
-                    expect(subject.imageURL).to(equal(url))
-                    expect(subject.name).to(equal("Jesse Pinkman"))
+                    expect(self.subject.imageURL).to(equal(url))
+                    expect(self.subject.name).to(equal("Jesse Pinkman"))
                     let occupation = expectedCharacter.occupation.joined(separator: "\n")
-                    expect(subject.occupation).to(equal(occupation))
-                    expect(subject.status).to(equal("Status: Alive"))
-                    expect(subject.nickname).to(equal("Nickname: Cap n' Cook"))
-                    expect(subject.seasonAppearance).to(equal("Season appearance: \n1, 2"))
+                    expect(self.subject.occupation).to(equal(occupation))
+                    expect(self.subject.status).to(equal("Status: Alive"))
+                    expect(self.subject.status).to(equal("Status: Alive"))
+                    expect(self.subject.nickname).to(equal("Nickname: Cap n' Cook"))
+                    expect(self.subject.seasonAppearance).to(equal("Season appearance: \n1, 2"))
                 }
             }
         }
-    }
-
-    private func fetchJSON(json: String) -> [Character] {
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        let jsonData = json.data(using: .utf8)!
-        let details = try! decoder.decode([Character].self, from: jsonData)
-
-        return details
     }
 }
 
@@ -92,6 +100,7 @@ let charactersJson = """
       5
     ],
     "portrayed": "Bryan Cranston",
+    "category": "Breaking Bad",
     "better_call_saul_appearance": []
   },
   {
@@ -109,6 +118,7 @@ let charactersJson = """
       2
     ],
     "portrayed": "Aaron Paul",
+    "category": "Breaking Bad",
     "better_call_saul_appearance": []
   }
 ]

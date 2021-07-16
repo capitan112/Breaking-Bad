@@ -13,8 +13,4 @@ target 'DevelopApp' do
     pod 'Nimble'
   end
 
-  target 'DevelopAppUITests' do
-    # Pods for testing
-  end
-
 end

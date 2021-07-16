@@ -15,12 +15,16 @@ class CharactersViewController: UIViewController, Storyboarded {
     }
 
     var coordinator: CharacterDetailsFlow?
+    private var characters: [Character]?
+    private var searchingCharacters: [Character]?
+    private var isFiltering = false
     private var filterButton: UIBarButtonItem!
     private var searchButton: UIBarButtonItem!
     private var cancelButton: UIBarButtonItem!
+
     private var cancelAction: UIAlertAction {
         return UIAlertAction(title: "Cancel", style: .cancel, handler: { [unowned self] _ in
-            viewModel?.resetSearching()
+            self.resetSearching()
             self.reloadTableView()
         })
     }
@@ -36,7 +40,7 @@ class CharactersViewController: UIViewController, Storyboarded {
         hideEpmtyCells()
         configNavigationItems()
     }
-
+    
     private func configNavigationItems() {
         filterButton = createBarButton(title: "Filter", selector: #selector(filterTapped))
         searchButton = createBarButton(title: "Search", selector: #selector(searchTapped))
@@ -53,9 +57,22 @@ class CharactersViewController: UIViewController, Storyboarded {
         tableView.tableFooterView = UIView()
     }
 
+    private func updateStateForMode(isFilteringMode: Bool) {
+        isFiltering = isFilteringMode
+        navigationItem.rightBarButtonItems = isFilteringMode ? [cancelButton] : [filterButton]
+    }
+
+    private func updateStateForMode(isSearchingMode: Bool) {
+        isFiltering = isSearchingMode
+        navigationItem.leftBarButtonItems = isSearchingMode ? [cancelButton] : [searchButton]
+    }
+
     private func setupBindings() {
-        viewModel?.reload.bind { [unowned self] _ in
-            self.reloadTableView()
+        viewModel?.characters.bind { characters in
+            if let characters = characters {
+                self.characters = characters
+                self.reloadTableView()
+            }
         }
     }
 
@@ -80,18 +97,8 @@ class CharactersViewController: UIViewController, Storyboarded {
 }
 
 extension CharactersViewController {
-    private func updateStateForMode(isFilteringMode: Bool) {
-        viewModel?.isFiltering = isFilteringMode
-        navigationItem.rightBarButtonItems = isFilteringMode ? [cancelButton] : [filterButton]
-    }
-
-    private func updateStateForMode(isSearchingMode: Bool) {
-        viewModel?.isFiltering = isSearchingMode
-        navigationItem.leftBarButtonItems = isSearchingMode ? [cancelButton] : [searchButton]
-    }
-
     @objc func cancelButtonTapped() {
-        viewModel?.resetSearching()
+        resetSearching()
         updateStateForMode(isFilteringMode: false)
         updateStateForMode(isSearchingMode: false)
         reloadTableView()
@@ -109,11 +116,11 @@ extension CharactersViewController {
     private func searchedHandler(alert _: UIAlertAction) {
         let userInput = alertController.textFields?[0].text?.lowercased() ?? ""
         if !userInput.isEmpty {
-            viewModel?.searchCharacters(by: userInput)
+            searchingCharacters = viewModel?.searchCharacters(by: userInput)
             updateStateForMode(isSearchingMode: true)
         } else {
             updateStateForMode(isSearchingMode: false)
-            viewModel?.resetSearching()
+            resetSearching()
         }
 
         reloadTableView()
@@ -136,11 +143,11 @@ extension CharactersViewController {
         let userInput = alertController.textFields?[0].text ?? "0"
 
         if !userInput.isEmpty, let season = Int(userInput) {
-            viewModel?.filterCharacters(by: season)
+            searchingCharacters = viewModel?.filterCharacters(by: season)
             updateStateForMode(isFilteringMode: true)
         } else {
             updateStateForMode(isFilteringMode: false)
-            viewModel?.resetSearching()
+            resetSearching()
         }
 
         reloadTableView()
@@ -148,6 +155,11 @@ extension CharactersViewController {
 
     private func alertAction(title: String, handler: @escaping ((UIAlertAction) -> Void)) -> UIAlertAction {
         return UIAlertAction(title: title, style: .default, handler: handler)
+    }
+
+    private func resetSearching() {
+        isFiltering = false
+        searchingCharacters = characters
     }
 
     private func alertController(title: String, style: UIAlertController.Style = .alert) -> UIAlertController {
@@ -160,13 +172,13 @@ extension CharactersViewController {
 
 extension CharactersViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        return viewModel?.rows ?? 0
+        return isFiltering ? searchingCharacters?.count ?? 0 : characters?.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! CharacterTableViewCell
 
-        if let character = viewModel?.characters?[indexPath.row] {
+        if let character = isFiltering ? searchingCharacters?[indexPath.row] : characters?[indexPath.row] {
             let cellViewModel = CharacterCellViewModel(character: character)
             cell.viewModel = cellViewModel
         }
@@ -175,7 +187,9 @@ extension CharactersViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let character = viewModel?.characters?[indexPath.row] else { return }
+        let details = isFiltering ? searchingCharacters : characters
+
+        guard let character = details?[indexPath.row] else { return }
         coordinator?.coordinateToDetails(with: character)
     }
 }

@@ -11,60 +11,53 @@ import Nimble
 import Quick
 
 class CharactersViewControllerTest: QuickSpec {
+    var subject: CharactersViewController!
+    var cell: CharacterTableViewCell!
+    
     override func spec() {
-        var subject: CharactersViewController!
-        var viewModel: CharactersViewModelType!
-        var cell: CharacterTableViewCell!
-
         context("when view is loaded") {
             beforeEach {
-                subject = CharactersViewController.instantiate(storyboardName: "Main")
-                viewModel = MockCharactersViewModel()
-                viewModel.fetchData()
-                subject.viewModel = viewModel
-                _ = subject.view
+                self.subject = CharactersViewController.instantiate(storyboardName: "Main")
+                let networkServiceLocal = NetworkServiceLocal(json: charactersJson)
+                let localDataFetcher = NetworkDataFetcher(networkingService: networkServiceLocal)
+                let mockViewModel = MockCharactersViewModel(dataFetcher: localDataFetcher)
+                self.subject.viewModel = mockViewModel
+                self.subject.viewModel?.fetchData()
+                _ = self.subject.view
 
-                cell = subject.tableView(subject.tableView, cellForRowAt: IndexPath(row: 0, section: 0)) as? CharacterTableViewCell
+                self.cell = self.subject.tableView(self.subject.tableView, cellForRowAt: IndexPath(row: 0, section: 0)) as? CharacterTableViewCell
+            }
+            
+            afterEach {
+                self.subject = nil
+                self.cell = nil
             }
 
             it("it should load 2 characters") {
-                expect(subject.tableView.numberOfRows(inSection: 0)).toEventually(equal(2))
+                expect(self.subject.tableView.numberOfRows(inSection: 0)).toEventually(equal(2))
             }
 
             it("it should get navigationItem rightBarButton with name filter") {
-                expect(subject.navigationItem.rightBarButtonItems?.first?.title).to(equal("Filter"))
+                expect(self.subject.navigationItem.rightBarButtonItems?.first?.title).to(equal("Filter"))
             }
 
             it("it should get tap rightBarButton with name filter and get alert controler") {
-                let action = subject.navigationItem.rightBarButtonItems?.first?.action
-                let target = subject.navigationItem.rightBarButtonItems?.first?.target
+                let action = self.subject.navigationItem.rightBarButtonItems?.first?.action
+                let target = self.subject.navigationItem.rightBarButtonItems?.first?.target
                 let control = UIControl()
                 control.sendAction(action!, to: target, for: nil)
-                expect(subject.alertController.title).to(equal("Filter by season"))
+                expect(self.subject.alertController.title).to(equal("Filter by season"))
             }
 
             it("it should get navigationItem leftBarButton with name search") {
-                expect(subject.navigationItem.leftBarButtonItems?.first?.title).to(equal("Search"))
+                expect(self.subject.navigationItem.leftBarButtonItems?.first?.title).to(equal("Search"))
             }
 
-            it("tableview cell should contain movie title and genre", closure: {
-                expect(cell.nameLabel.text).to(equal("Walter White"))
-            })
+            it("tableview cell should contain movie title and genre") {
+                expect(self.cell.nameLabel.text).to(equal("Walter White"))
+            }
         }
     }
 }
 
-class MockCharactersViewModel: CharactersViewModel {
-    override func fetchData() {
-        originCharacters = fetchJSON(json: charactersJson)
-    }
-
-    private func fetchJSON(json: String) -> [Character] {
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        let jsonData = json.data(using: .utf8)!
-        let details = try! decoder.decode([Character].self, from: jsonData)
-
-        return details
-    }
-}
+class MockCharactersViewModel: CharactersViewModel {}

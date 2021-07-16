@@ -17,7 +17,14 @@ struct Character: Decodable {
     let nickname: String
     let appearance: [Int]
     let portrayed: String
+    let category: Category
     let betterCallSaulAppearance: [Int]
+}
+
+enum Category: String, Decodable {
+    case betterCallSaul = "Better Call Saul"
+    case breakingBad = "Breaking Bad"
+    case breakingBadBetterCallSaul = "Breaking Bad, Better Call Saul"
 }
 
 enum Status: String, Decodable {

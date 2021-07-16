@@ -7,13 +7,13 @@ public func beNil<T>() -> Predicate<T> {
 }
 
 #if canImport(Darwin)
-    import Foundation
+import Foundation
 
-    public extension NMBPredicate {
-        @objc class func beNilMatcher() -> NMBPredicate {
-            return NMBPredicate { actualExpression in
-                try beNil().satisfies(actualExpression).toObjectiveC()
-            }
+extension NMBPredicate {
+    @objc public class func beNilMatcher() -> NMBPredicate {
+        return NMBPredicate { actualExpression in
+            return try beNil().satisfies(actualExpression).toObjectiveC()
         }
     }
+}
 #endif

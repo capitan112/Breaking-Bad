@@ -11,70 +11,78 @@ import Nimble
 import Quick
 
 class CharactersViewModelTest: QuickSpec {
-    override func spec() {
-        var subject: CharactersViewModelType!
-        var characters: [Character]!
+    var subject: CharactersViewModel!
+    var characters: [Character]!
+    var localDataFetcher: NetworkDataFetcher!
 
+    override func spec() {
         context("when viewModel is loaded") {
             beforeEach {
-                subject = MockCharactersViewModel()
-                subject.fetchData()
-                characters = self.fetchJSON(json: charactersJson)
+                self.subject = CharactersViewModel()
+                
+                let networkServiceLocal = NetworkServiceLocal(json: charactersJson)
+                self.localDataFetcher = NetworkDataFetcher(networkingService: networkServiceLocal)
+                
+                self.localDataFetcher.fetchDetails { response in
+                    switch response {
+                    case let .success(characters):
+                        self.characters = characters
+                        self.subject.characters.value = self.characters
+                    case let .failure(error):
+                        debugPrint(error.localizedDescription)
+                        XCTFail()
+                    }
+                }
             }
 
             afterEach {
-                subject = nil
-                characters = nil
+                self.subject = nil
+                self.characters = nil
             }
 
             it("it should filter characters by seasons 1") {
-                expect(subject.characters?.count).to(equal(2))
-                subject.isFiltering = true
-                subject.filterCharacters(by: 1)
-                expect(subject.characters?.count).to(equal(2))
+                let filteredCharacters = self.subject.filterCharacters(by: 1)
+                expect(filteredCharacters?.count).to(equal(2))
             }
 
             it("it should filter characters by seasons 3") {
-                expect(subject.characters?.count).to(equal(2))
-                subject.filterCharacters(by: 3)
-                subject.isFiltering = true
-                expect(subject.characters?.count).to(equal(1))
+                let filteredCharacters = self.subject.filterCharacters(by: 3)
+                expect(filteredCharacters?.count).to(equal(1))
             }
 
-            it("it should search characters by name") {
-                guard let expectedCharacter = characters.first else {
+            it("it should search Characters by name") {
+                guard let expectedCharacter = self.characters.first else {
                     fail()
                     return
                 }
 
-                subject.searchCharacters(by: "Walter White")
-                let character = subject.characters?.first
-                expect(character?.name).to(equal("Walter White"))
+                guard let searchedCharacter = self.subject.searchCharacters(by: "Walter White")?.first else {
+                    fail()
+                    return
+                }
+
+                expect(searchedCharacter.name).to(equal("Walter White"))
                 let occupation = expectedCharacter.occupation
-                expect(character?.occupation).to(equal(occupation))
+                expect(searchedCharacter.occupation).to(equal(occupation))
             }
 
-            it("it should search characters by name with space") {
-                subject.searchCharacters(by: " ")
-                subject.isFiltering = true
-                expect(subject.characters?.count).to(equal(2))
+            it("it should search Characters by name with space") {
+                guard let searchedCharacter = self.subject.searchCharacters(by: " ") else {
+                    fail()
+                    return
+                }
+
+                expect(searchedCharacter.count).to(equal(2))
             }
 
             it("it should search Characters by name with empty value") {
-                expect(subject.characters?.count).to(equal(2))
-                subject.searchCharacters(by: "")
-                subject.isFiltering = true
-                expect(subject.characters?.count).to(equal(0))
+                guard let searchedCharacter = self.subject.searchCharacters(by: "") else {
+                    fail()
+                    return
+                }
+
+                expect(searchedCharacter.count).to(equal(0))
             }
         }
-    }
-
-    private func fetchJSON(json: String) -> [Character] {
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        let jsonData = json.data(using: .utf8)!
-        let details = try! decoder.decode([Character].self, from: jsonData)
-
-        return details
     }
 }

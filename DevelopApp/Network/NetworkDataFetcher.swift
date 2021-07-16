@@ -19,18 +19,18 @@ protocol NetworkDataFetcherProtocol {
 }
 
 final class NetworkDataFetcher: NetworkDataFetcherProtocol {
-    var networking: NetworkProtocol
+    var networkingService: NetworkProtocol
 
-    init(networking: NetworkProtocol = NetworkService()) {
-        self.networking = networking
+    init(networkingService: NetworkProtocol = NetworkService()) {
+        self.networkingService = networkingService
     }
 
     func fetchDetails(completion: @escaping (Result<[Character], Error>) -> Void) {
         fetchGenericJSONData(response: completion)
     }
 
-    func fetchGenericJSONData(response: @escaping (Result<[Character], Error>) -> Void) {
-        networking.request { dataResponse in
+    func fetchGenericJSONData<T: Decodable>(response: @escaping (Result<T, Error>) -> Void) {
+        networkingService.request { dataResponse in
             guard let data = try? dataResponse.get() else {
                 response(.failure(ConversionFailure.responceError))
                 return
@@ -40,7 +40,7 @@ final class NetworkDataFetcher: NetworkDataFetcherProtocol {
         }
     }
 
-    private func decodeJSON(from data: Data?, completion: @escaping (Result<[Character], Error>) -> Void) {
+    private func decodeJSON<T: Decodable>(from data: Data?, completion: @escaping (Result<T, Error>) -> Void) {
         guard let data = data else {
             completion(.failure(ConversionFailure.missingData))
             return
@@ -50,7 +50,7 @@ final class NetworkDataFetcher: NetworkDataFetcherProtocol {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         do {
             let result = Result(catching: {
-                try decoder.decode([Character].self, from: data)
+                try decoder.decode(T.self, from: data)
             })
 
             completion(result)

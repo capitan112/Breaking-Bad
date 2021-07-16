@@ -78,34 +78,34 @@ public func beEmpty() -> Predicate<NMBCollection> {
 }
 
 #if canImport(Darwin)
-    public extension NMBPredicate {
-        @objc class func beEmptyMatcher() -> NMBPredicate {
-            return NMBPredicate { actualExpression in
-                let location = actualExpression.location
-                let actualValue = try actualExpression.evaluate()
+extension NMBPredicate {
+    @objc public class func beEmptyMatcher() -> NMBPredicate {
+        return NMBPredicate { actualExpression in
+            let location = actualExpression.location
+            let actualValue = try actualExpression.evaluate()
 
-                if let value = actualValue as? NMBCollection {
-                    let expr = Expression(expression: ({ value }), location: location)
-                    return try beEmpty().satisfies(expr).toObjectiveC()
-                } else if let value = actualValue as? NSString {
-                    let expr = Expression(expression: ({ value }), location: location)
-                    return try beEmpty().satisfies(expr).toObjectiveC()
-                } else if let actualValue = actualValue {
-                    // swiftlint:disable:next line_length
-                    let badTypeErrorMsg = "be empty (only works for NSArrays, NSSets, NSIndexSets, NSDictionaries, NSHashTables, and NSStrings)"
-                    return NMBPredicateResult(
-                        status: NMBPredicateStatus.fail,
-                        message: NMBExpectationMessage(
-                            expectedActualValueTo: badTypeErrorMsg,
-                            customActualValue: "\(String(describing: type(of: actualValue))) type"
-                        )
-                    )
-                }
+            if let value = actualValue as? NMBCollection {
+                let expr = Expression(expression: ({ value }), location: location)
+                return try beEmpty().satisfies(expr).toObjectiveC()
+            } else if let value = actualValue as? NSString {
+                let expr = Expression(expression: ({ value }), location: location)
+                return try beEmpty().satisfies(expr).toObjectiveC()
+            } else if let actualValue = actualValue {
+                // swiftlint:disable:next line_length
+                let badTypeErrorMsg = "be empty (only works for NSArrays, NSSets, NSIndexSets, NSDictionaries, NSHashTables, and NSStrings)"
                 return NMBPredicateResult(
                     status: NMBPredicateStatus.fail,
-                    message: NMBExpectationMessage(expectedActualValueTo: "be empty").appendedBeNilHint()
+                    message: NMBExpectationMessage(
+                        expectedActualValueTo: badTypeErrorMsg,
+                        customActualValue: "\(String(describing: type(of: actualValue))) type"
+                    )
                 )
             }
+            return NMBPredicateResult(
+                status: NMBPredicateStatus.fail,
+                message: NMBExpectationMessage(expectedActualValueTo: "be empty").appendedBeNilHint()
+            )
         }
     }
+}
 #endif

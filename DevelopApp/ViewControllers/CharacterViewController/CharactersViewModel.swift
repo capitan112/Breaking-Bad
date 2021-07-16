@@ -8,49 +8,32 @@
 import Foundation
 
 protocol CharactersViewModelType {
-    var reload: Bindable<Void?> { get }
-    var characters: [Character]? { get }
-    var isFiltering: Bool { get set }
-    var rows: Int { get }
+    var characters: Bindable<[Character]?> { get set }
     func fetchData()
-    func searchCharacters(by name: String)
-    func filterCharacters(by season: Int)
-    func resetSearching()
+    func searchCharacters(by name: String) -> [Character]?
+    func filterCharacters(by season: Int) -> [Character]?
 }
 
 class CharactersViewModel: CharactersViewModelType {
-    var reload: Bindable<Void?> = Bindable(nil)
-
-    private let dataFetcher = NetworkDataFetcher()
-    var characters: [Character]? {
-        return isFiltering ? searchingCharacters : originCharacters
+    private(set) var dataFetcher: NetworkDataFetcherProtocol!
+    var characters: Bindable<[Character]?> = Bindable(nil)
+    
+    init(dataFetcher: NetworkDataFetcherProtocol = NetworkDataFetcher()) {
+        self.dataFetcher = dataFetcher
     }
-
-    var originCharacters: [Character]? = []
-    var searchingCharacters: [Character]?
-    var isFiltering = false
-    var rows: Int {
-        return isFiltering ? searchingCharacters?.count ?? 0 : originCharacters?.count ?? 0
-    }
-
+    
     func fetchData() {
         dataFetcher.fetchDetails(completion: { response in
             guard let characters = try? response.get() else { return }
-            self.originCharacters = characters
-            self.reload.value = ()
+            self.characters.value = characters
         })
     }
 
-    func searchCharacters(by name: String) {
-        searchingCharacters = originCharacters?.filter { $0.name.lowercased().contains(name.lowercased()) }
+    func searchCharacters(by name: String) -> [Character]? {
+        return characters.value?.filter { $0.name.lowercased().contains(name.lowercased()) }
     }
 
-    func filterCharacters(by season: Int) {
-        searchingCharacters = originCharacters?.filter { $0.appearance.contains(season) }
-    }
-
-    func resetSearching() {
-        isFiltering = false
-        searchingCharacters = originCharacters
+    func filterCharacters(by season: Int) -> [Character]? {
+        return characters.value?.filter { $0.appearance.contains(season) }
     }
 }

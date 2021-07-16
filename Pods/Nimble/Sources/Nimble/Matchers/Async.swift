@@ -1,18 +1,18 @@
-import Dispatch
 import Foundation
+import Dispatch
 
 /// If you are running on a slower machine, it could be useful to increase the default timeout value
 /// or slow down poll interval. Default timeout interval is 1, and poll interval is 0.01.
-public enum AsyncDefaults {
+public struct AsyncDefaults {
     public static var timeout: DispatchTimeInterval = .seconds(1)
     public static var pollInterval: DispatchTimeInterval = .milliseconds(10)
 }
 
-public extension AsyncDefaults {
+extension AsyncDefaults {
     @available(*, unavailable, renamed: "timeout")
-    static var Timeout: TimeInterval = 1
+    public static var Timeout: TimeInterval = 1
     @available(*, unavailable, renamed: "pollInterval")
-    static var PollInterval: TimeInterval = 0.01
+    public static var PollInterval: TimeInterval = 0.01
 }
 
 private func async<T>(style: ExpectationStyle, predicate: Predicate<T>, timeout: DispatchTimeInterval, poll: DispatchTimeInterval, fnName: String) -> Predicate<T> {
@@ -25,10 +25,9 @@ private func async<T>(style: ExpectationStyle, predicate: Predicate<T>, timeout:
             timeoutInterval: timeout,
             file: actualExpression.location.file,
             line: actualExpression.location.line,
-            fnName: fnName
-        ) {
-            lastPredicateResult = try predicate.satisfies(uncachedExpression)
-            return lastPredicateResult!.toBoolean(expectation: style)
+            fnName: fnName) {
+                lastPredicateResult = try predicate.satisfies(uncachedExpression)
+                return lastPredicateResult!.toBoolean(expectation: style)
         }
         switch result {
         case .completed: return lastPredicateResult!
@@ -52,19 +51,19 @@ private func async<T>(style: ExpectationStyle, predicate: Predicate<T>, timeout:
 
 private let toEventuallyRequiresClosureError = FailureMessage(
     stringValue: """
-    expect(...).toEventually(...) requires an explicit closure (eg - expect { ... }.toEventually(...) )
-    Swift 1.2 @autoclosure behavior has changed in an incompatible way for Nimble to function
-    """
+        expect(...).toEventually(...) requires an explicit closure (eg - expect { ... }.toEventually(...) )
+        Swift 1.2 @autoclosure behavior has changed in an incompatible way for Nimble to function
+        """
 )
 
-public extension Expectation {
+extension Expectation {
     /// Tests the actual value using a matcher to match by checking continuously
     /// at each pollInterval until the timeout is reached.
     ///
     /// @discussion
     /// This function manages the main run loop (`NSRunLoop.mainRunLoop()`) while this function
     /// is executing. Any attempts to touch the run loop may cause non-deterministic behavior.
-    func toEventually(_ predicate: Predicate<T>, timeout: DispatchTimeInterval = AsyncDefaults.timeout, pollInterval: DispatchTimeInterval = AsyncDefaults.pollInterval, description: String? = nil) {
+    public func toEventually(_ predicate: Predicate<T>, timeout: DispatchTimeInterval = AsyncDefaults.timeout, pollInterval: DispatchTimeInterval = AsyncDefaults.pollInterval, description: String? = nil) {
         nimblePrecondition(expression.isClosure, "NimbleInternalError", toEventuallyRequiresClosureError.stringValue)
 
         let (pass, msg) = execute(
@@ -84,7 +83,7 @@ public extension Expectation {
     /// @discussion
     /// This function manages the main run loop (`NSRunLoop.mainRunLoop()`) while this function
     /// is executing. Any attempts to touch the run loop may cause non-deterministic behavior.
-    func toEventuallyNot(_ predicate: Predicate<T>, timeout: DispatchTimeInterval = AsyncDefaults.timeout, pollInterval: DispatchTimeInterval = AsyncDefaults.pollInterval, description: String? = nil) {
+    public func toEventuallyNot(_ predicate: Predicate<T>, timeout: DispatchTimeInterval = AsyncDefaults.timeout, pollInterval: DispatchTimeInterval = AsyncDefaults.pollInterval, description: String? = nil) {
         nimblePrecondition(expression.isClosure, "NimbleInternalError", toEventuallyRequiresClosureError.stringValue)
 
         let (pass, msg) = execute(
@@ -112,7 +111,7 @@ public extension Expectation {
     /// @discussion
     /// This function manages the main run loop (`NSRunLoop.mainRunLoop()`) while this function
     /// is executing. Any attempts to touch the run loop may cause non-deterministic behavior.
-    func toNotEventually(_ predicate: Predicate<T>, timeout: DispatchTimeInterval = AsyncDefaults.timeout, pollInterval: DispatchTimeInterval = AsyncDefaults.pollInterval, description: String? = nil) {
+    public func toNotEventually(_ predicate: Predicate<T>, timeout: DispatchTimeInterval = AsyncDefaults.timeout, pollInterval: DispatchTimeInterval = AsyncDefaults.pollInterval, description: String? = nil) {
         return toEventuallyNot(predicate, timeout: timeout, pollInterval: pollInterval, description: description)
     }
 }
@@ -126,8 +125,7 @@ extension Expectation {
     /// This function manages the main run loop (`NSRunLoop.mainRunLoop()`) while this function
     /// is executing. Any attempts to touch the run loop may cause non-deterministic behavior.
     public func toEventually<U>(_ matcher: U, timeout: DispatchTimeInterval = AsyncDefaults.timeout, pollInterval: DispatchTimeInterval = AsyncDefaults.pollInterval, description: String? = nil)
-        where U: Matcher, U.ValueType == T
-    {
+        where U: Matcher, U.ValueType == T {
         if expression.isClosure {
             let (pass, msg) = execute(
                 expression,
@@ -156,8 +154,7 @@ extension Expectation {
     /// This function manages the main run loop (`NSRunLoop.mainRunLoop()`) while this function
     /// is executing. Any attempts to touch the run loop may cause non-deterministic behavior.
     public func toEventuallyNot<U>(_ matcher: U, timeout: DispatchTimeInterval = AsyncDefaults.timeout, pollInterval: DispatchTimeInterval = AsyncDefaults.pollInterval, description: String? = nil)
-        where U: Matcher, U.ValueType == T
-    {
+        where U: Matcher, U.ValueType == T {
         if expression.isClosure {
             let (pass, msg) = expressionDoesNotMatch(
                 expression,
@@ -186,8 +183,7 @@ extension Expectation {
     /// This function manages the main run loop (`NSRunLoop.mainRunLoop()`) while this function
     /// is executing. Any attempts to touch the run loop may cause non-deterministic behavior.
     public func toNotEventually<U>(_ matcher: U, timeout: DispatchTimeInterval = AsyncDefaults.timeout, pollInterval: DispatchTimeInterval = AsyncDefaults.pollInterval, description: String? = nil)
-        where U: Matcher, U.ValueType == T
-    {
+        where U: Matcher, U.ValueType == T {
         return toEventuallyNot(matcher, timeout: timeout, pollInterval: pollInterval, description: description)
     }
 }

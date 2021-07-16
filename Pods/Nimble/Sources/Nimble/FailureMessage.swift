@@ -34,7 +34,8 @@ public class FailureMessage: NSObject {
         return _stringValueOverride != nil
     }
 
-    override public init() {}
+    public override init() {
+    }
 
     public init(stringValue: String) {
         _stringValueOverride = stringValue
