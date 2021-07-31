@@ -19,11 +19,7 @@ protocol NetworkDataFetcherProtocol {
 }
 
 final class NetworkDataFetcher: NetworkDataFetcherProtocol {
-    var networkingService: NetworkProtocol
-
-    init(networkingService: NetworkProtocol = NetworkService()) {
-        self.networkingService = networkingService
-    }
+    @Injected var networkingService: NetworkProtocol
 
     func fetchDetails(completion: @escaping (Result<[Character], Error>) -> Void) {
         fetchGenericJSONData(response: completion)

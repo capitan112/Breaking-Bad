@@ -9,7 +9,7 @@ import SDWebImage
 import UIKit
 
 class DetailsViewController: UIViewController, Storyboarded {
-    var viewModel: DetailsViewModelType?
+    @LazyInjected var viewModel: DetailsViewModelType
     @IBOutlet var imageName: UIImageView!
     @IBOutlet var nameLabel: UILabel!
     @IBOutlet var occupationLabel: UILabel!
@@ -29,7 +29,6 @@ class DetailsViewController: UIViewController, Storyboarded {
     }
 
     private func updateUI() {
-        guard let viewModel = viewModel else { return }
         imageName.sd_setImage(with: viewModel.imageURL, placeholderImage: UIImage(named: "placeholder.png"))
         nameLabel.text = viewModel.name
         occupationLabel.text = viewModel.occupation

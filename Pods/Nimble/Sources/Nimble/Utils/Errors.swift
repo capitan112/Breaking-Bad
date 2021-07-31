@@ -17,7 +17,7 @@ internal func messageForError<T: Error>(
     if closure != nil {
         rawMessage += " that satisfies block"
     }
-    if error == nil && errorType == nil && closure == nil {
+    if error == nil, errorType == nil, closure == nil {
         rawMessage = "\(postfixMessageVerb) any error"
     }
 
@@ -33,9 +33,10 @@ internal func messageForError<T: Error>(
 
 internal func errorMatchesExpectedError<T: Error>(
     _ actualError: Error,
-    expectedError: T) -> Bool {
+    expectedError: T
+) -> Bool {
     return actualError._domain == expectedError._domain
-        && actualError._code   == expectedError._code
+        && actualError._code == expectedError._code
 }
 
 // Non-generic

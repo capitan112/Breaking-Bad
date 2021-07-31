@@ -12,22 +12,20 @@ import Quick
 
 class CharactersViewModelTest: QuickSpec {
     var subject: CharactersViewModel!
+    @LazyInjected var localDataFetcher: NetworkDataFetcherProtocol
     var characters: [Character]!
-    var localDataFetcher: NetworkDataFetcher!
 
     override func spec() {
         context("when viewModel is loaded") {
             beforeEach {
                 self.subject = CharactersViewModel()
-                
-                let networkServiceLocal = NetworkServiceLocal(json: charactersJson)
-                self.localDataFetcher = NetworkDataFetcher(networkingService: networkServiceLocal)
-                
+                TestDependencyGraph.registerLocalSerives()
+
                 self.localDataFetcher.fetchDetails { response in
                     switch response {
                     case let .success(characters):
                         self.characters = characters
-                        self.subject.characters.value = self.characters
+                        self.subject.characters.value = characters
                     case let .failure(error):
                         debugPrint(error.localizedDescription)
                         XCTFail()
@@ -36,13 +34,12 @@ class CharactersViewModelTest: QuickSpec {
             }
 
             afterEach {
-                self.subject = nil
                 self.characters = nil
             }
 
             it("it should filter characters by seasons 1") {
                 let filteredCharacters = self.subject.filterCharacters(by: 1)
-                expect(filteredCharacters?.count).to(equal(2))
+                expect(filteredCharacters?.count).toEventually(equal(2))
             }
 
             it("it should filter characters by seasons 3") {

@@ -19,7 +19,7 @@ final class AppCoordinator: Coordinator {
         let navigationController = UINavigationController()
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
-
+        DependencyGraph.registerAllComponents()
         let startCoordinator = CharactersCoordinator(navigationController: navigationController)
         coordinate(to: startCoordinator)
     }

@@ -31,12 +31,13 @@ public class AssertionRecorder: AssertionHandler {
             AssertionRecord(
                 success: assertion,
                 message: message,
-                location: location))
+                location: location
+            ))
     }
 }
 
 extension NMBExceptionCapture {
-    internal func tryBlockThrows(_ unsafeBlock: () throws -> Void) throws {
+    func tryBlockThrows(_ unsafeBlock: () throws -> Void) throws {
         var catchedError: Error?
         tryBlock {
             do {
@@ -60,7 +61,8 @@ extension NMBExceptionCapture {
 public func withAssertionHandler(_ tempAssertionHandler: AssertionHandler,
                                  file: FileString = #file,
                                  line: UInt = #line,
-                                 closure: () throws -> Void) {
+                                 closure: () throws -> Void)
+{
     let environment = NimbleEnvironment.activeInstance
     let oldRecorder = environment.assertionHandler
     let capturer = NMBExceptionCapture(handler: nil, finally: ({
@@ -86,7 +88,7 @@ public func withAssertionHandler(_ tempAssertionHandler: AssertionHandler,
 /// This can be useful if you want to gather information about expectations
 /// that occur within a closure.
 ///
-/// @param silently expectations are no longer send to the default Nimble 
+/// @param silently expectations are no longer send to the default Nimble
 ///                 assertion handler when this is true. Defaults to false.
 ///
 /// @see gatherFailingExpectations

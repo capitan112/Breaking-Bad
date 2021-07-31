@@ -24,7 +24,7 @@ internal protocol WaitLock {
 
 internal class AssertionWaitLock: WaitLock {
     private var currentWaiter: WaitingInfo?
-    init() { }
+    init() {}
 
     func acquireWaitingLock(_ fnName: String, file: FileString, line: UInt) {
         let info = WaitingInfo(name: fnName, file: file, lineNumber: line)
@@ -95,7 +95,7 @@ internal enum AwaitResult<T> {
 /// Holds the resulting value from an asynchronous expectation.
 /// This class is thread-safe at receiving an "response" to this promise.
 internal final class AwaitPromise<T> {
-    private(set) internal var asyncResult: AwaitResult<T> = .incomplete
+    internal private(set) var asyncResult: AwaitResult<T> = .incomplete
     private var signal: DispatchSemaphore
 
     init() {
@@ -113,7 +113,7 @@ internal final class AwaitPromise<T> {
     ///          value was received first.
     func resolveResult(_ result: AwaitResult<T>) -> Bool {
         if signal.wait(timeout: .now()) == .success {
-            self.asyncResult = result
+            asyncResult = result
             return true
         } else {
             return false
@@ -141,11 +141,12 @@ internal class AwaitPromiseBuilder<T> {
         awaiter: Awaiter,
         waitLock: WaitLock,
         promise: AwaitPromise<T>,
-        trigger: AwaitTrigger) {
-            self.awaiter = awaiter
-            self.waitLock = waitLock
-            self.promise = promise
-            self.trigger = trigger
+        trigger: AwaitTrigger
+    ) {
+        self.awaiter = awaiter
+        self.waitLock = waitLock
+        self.promise = promise
+        self.trigger = trigger
     }
 
     func timeout(_ timeoutInterval: DispatchTimeInterval, forcefullyAbortTimeout: DispatchTimeInterval) -> Self {
@@ -207,7 +208,7 @@ internal class AwaitPromiseBuilder<T> {
             let now = DispatchTime.now() + forcefullyAbortTimeout
             let didNotTimeOut = timedOutSem.wait(timeout: now) != .success
             let timeoutWasNotTriggered = semTimedOutOrBlocked.wait(timeout: .now()) == .success
-            if didNotTimeOut && timeoutWasNotTriggered {
+            if didNotTimeOut, timeoutWasNotTriggered {
                 if self.promise.resolveResult(.blockedRunLoop) {
                     CFRunLoopStop(CFRunLoopGetMain())
                 }
@@ -237,7 +238,8 @@ internal class AwaitPromiseBuilder<T> {
         waitLock.acquireWaitingLock(
             fnName,
             file: file,
-            line: line)
+            line: line
+        )
 
         let capture = NMBExceptionCapture(handler: ({ exception in
             _ = self.promise.resolveResult(.raisedException(exception))
@@ -247,7 +249,7 @@ internal class AwaitPromiseBuilder<T> {
         capture.tryBlock {
             do {
                 try self.trigger.start()
-            } catch let error {
+            } catch {
                 _ = self.promise.resolveResult(.errorThrown(error))
             }
             self.trigger.timeoutSource.resume()
@@ -274,10 +276,11 @@ internal class Awaiter {
     internal init(
         waitLock: WaitLock,
         asyncQueue: DispatchQueue,
-        timeoutQueue: DispatchQueue) {
-            self.waitLock = waitLock
-            self.asyncQueue = asyncQueue
-            self.timeoutQueue = timeoutQueue
+        timeoutQueue: DispatchQueue
+    ) {
+        self.waitLock = waitLock
+        self.asyncQueue = asyncQueue
+        self.timeoutQueue = timeoutQueue
     }
 
     private func createTimerSource(_ queue: DispatchQueue) -> DispatchSourceTimer {
@@ -288,37 +291,38 @@ internal class Awaiter {
         file: FileString,
         line: UInt,
         _ closure: @escaping (@escaping (T) -> Void) throws -> Void
-        ) -> AwaitPromiseBuilder<T> {
-            let promise = AwaitPromise<T>()
-            let timeoutSource = createTimerSource(timeoutQueue)
-            var completionCount = 0
-            let trigger = AwaitTrigger(timeoutSource: timeoutSource, actionSource: nil) {
-                try closure { result in
-                    completionCount += 1
-                    if completionCount < 2 {
-                        func completeBlock() {
-                            if promise.resolveResult(.completed(result)) {
-                                CFRunLoopStop(CFRunLoopGetMain())
-                            }
+    ) -> AwaitPromiseBuilder<T> {
+        let promise = AwaitPromise<T>()
+        let timeoutSource = createTimerSource(timeoutQueue)
+        var completionCount = 0
+        let trigger = AwaitTrigger(timeoutSource: timeoutSource, actionSource: nil) {
+            try closure { result in
+                completionCount += 1
+                if completionCount < 2 {
+                    func completeBlock() {
+                        if promise.resolveResult(.completed(result)) {
+                            CFRunLoopStop(CFRunLoopGetMain())
                         }
-
-                        if Thread.isMainThread {
-                            completeBlock()
-                        } else {
-                            DispatchQueue.main.async { completeBlock() }
-                        }
-                    } else {
-                        fail("waitUntil(..) expects its completion closure to be only called once",
-                             file: file, line: line)
                     }
+
+                    if Thread.isMainThread {
+                        completeBlock()
+                    } else {
+                        DispatchQueue.main.async { completeBlock() }
+                    }
+                } else {
+                    fail("waitUntil(..) expects its completion closure to be only called once",
+                         file: file, line: line)
                 }
             }
+        }
 
-            return AwaitPromiseBuilder(
-                awaiter: self,
-                waitLock: waitLock,
-                promise: promise,
-                trigger: trigger)
+        return AwaitPromiseBuilder(
+            awaiter: self,
+            waitLock: waitLock,
+            promise: promise,
+            trigger: trigger
+        )
     }
 
     func poll<T>(_ pollInterval: DispatchTimeInterval, closure: @escaping () throws -> T?) -> AwaitPromiseBuilder<T> {
@@ -335,7 +339,7 @@ internal class Awaiter {
                             CFRunLoopStop(CFRunLoopGetCurrent())
                         }
                     }
-                } catch let error {
+                } catch {
                     if promise.resolveResult(.errorThrown(error)) {
                         CFRunLoopStop(CFRunLoopGetCurrent())
                     }
@@ -348,7 +352,8 @@ internal class Awaiter {
             awaiter: self,
             waitLock: waitLock,
             promise: promise,
-            trigger: trigger)
+            trigger: trigger
+        )
     }
 }
 
@@ -358,14 +363,15 @@ internal func pollBlock(
     file: FileString,
     line: UInt,
     fnName: String = #function,
-    expression: @escaping () throws -> Bool) -> AwaitResult<Bool> {
-        let awaiter = NimbleEnvironment.activeInstance.awaiter
-        let result = awaiter.poll(pollInterval) { () throws -> Bool? in
-            if try expression() {
-                return true
-            }
-            return nil
-        }.timeout(timeoutInterval, forcefullyAbortTimeout: timeoutInterval.divided).wait(fnName, file: file, line: line)
+    expression: @escaping () throws -> Bool
+) -> AwaitResult<Bool> {
+    let awaiter = NimbleEnvironment.activeInstance.awaiter
+    let result = awaiter.poll(pollInterval) { () throws -> Bool? in
+        if try expression() {
+            return true
+        }
+        return nil
+    }.timeout(timeoutInterval, forcefullyAbortTimeout: timeoutInterval.divided).wait(fnName, file: file, line: line)
 
-        return result
+    return result
 }

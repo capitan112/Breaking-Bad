@@ -22,9 +22,6 @@ final class CharactersCoordinator: Coordinator, CharacterDetailsFlow {
     func start() {
         let startViewController = CharactersViewController.instantiate(storyboardName: "Main")
         startViewController.coordinator = self
-        let startViewModel = CharactersViewModel()
-        startViewModel.fetchData()
-        startViewController.viewModel = startViewModel
         navigationController.pushViewController(startViewController, animated: true)
     }
 

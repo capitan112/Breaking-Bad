@@ -10,14 +10,14 @@ public func match(_ expectedValue: String?) -> Predicate<String> {
 }
 
 #if canImport(Darwin)
-import class Foundation.NSString
+    import class Foundation.NSString
 
-extension NMBPredicate {
-    @objc public class func matchMatcher(_ expected: NSString) -> NMBPredicate {
-        return NMBPredicate { actualExpression in
-            let actual = actualExpression.cast { $0 as? String }
-            return try match(expected.description).satisfies(actual).toObjectiveC()
+    public extension NMBPredicate {
+        @objc class func matchMatcher(_ expected: NSString) -> NMBPredicate {
+            return NMBPredicate { actualExpression in
+                let actual = actualExpression.cast { $0 as? String }
+                return try match(expected.description).satisfies(actual).toObjectiveC()
+            }
         }
     }
-}
 #endif

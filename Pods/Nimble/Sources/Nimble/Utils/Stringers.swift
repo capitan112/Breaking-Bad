@@ -63,14 +63,14 @@ extension NSNumber: TestOutputStringConvertible {
 
 extension Array: TestOutputStringConvertible {
     public var testDescription: String {
-        let list = self.map(Nimble.stringify).joined(separator: ", ")
+        let list = map(Nimble.stringify).joined(separator: ", ")
         return "[\(list)]"
     }
 }
 
 extension AnySequence: TestOutputStringConvertible {
     public var testDescription: String {
-        let generator = self.makeIterator()
+        let generator = makeIterator()
         var strings = [String]()
         var value: AnySequence.Element?
 
@@ -141,17 +141,17 @@ public func stringify<T>(_ value: T?) -> String {
 }
 
 #if canImport(Darwin)
-@objc public class NMBStringer: NSObject {
-    @objc public class func stringify(_ obj: Any?) -> String {
-        return Nimble.stringify(obj)
+    @objc public class NMBStringer: NSObject {
+        @objc public class func stringify(_ obj: Any?) -> String {
+            return Nimble.stringify(obj)
+        }
     }
-}
 #endif
 
 // MARK: Collection Type Stringers
 
 /// Attempts to generate a pretty type string for a given value. If the value is of a Objective-C
-/// collection type, or a subclass thereof, (e.g. `NSArray`, `NSDictionary`, etc.). 
+/// collection type, or a subclass thereof, (e.g. `NSArray`, `NSDictionary`, etc.).
 /// This function will return the type name of the root class of the class cluster for better
 /// readability (e.g. `NSArray` instead of `__NSArrayI`).
 ///

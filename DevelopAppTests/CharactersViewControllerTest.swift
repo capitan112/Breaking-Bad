@@ -13,21 +13,19 @@ import Quick
 class CharactersViewControllerTest: QuickSpec {
     var subject: CharactersViewController!
     var cell: CharacterTableViewCell!
-    
+    @LazyInjected var localDataFetcher: NetworkDataFetcherProtocol
     override func spec() {
         context("when view is loaded") {
             beforeEach {
+                TestDependencyGraph.registerLocalSerives()
+                TestDependencyGraph.registerMockCharactersViewModel()
                 self.subject = CharactersViewController.instantiate(storyboardName: "Main")
-                let networkServiceLocal = NetworkServiceLocal(json: charactersJson)
-                let localDataFetcher = NetworkDataFetcher(networkingService: networkServiceLocal)
-                let mockViewModel = MockCharactersViewModel(dataFetcher: localDataFetcher)
-                self.subject.viewModel = mockViewModel
-                self.subject.viewModel?.fetchData()
+                self.subject.viewModel.fetchData()
                 _ = self.subject.view
 
                 self.cell = self.subject.tableView(self.subject.tableView, cellForRowAt: IndexPath(row: 0, section: 0)) as? CharacterTableViewCell
             }
-            
+
             afterEach {
                 self.subject = nil
                 self.cell = nil

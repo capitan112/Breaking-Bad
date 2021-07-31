@@ -19,8 +19,7 @@ final class DetailsCoordinator: Coordinator {
 
     func start() {
         let detailsViewController = DetailsViewController.instantiate(storyboardName: "Main")
-        let detailsViewModel = DetailsViewModel(character: character)
-        detailsViewController.viewModel = detailsViewModel
+        detailsViewController.viewModel.character = character
         navigationController.present(detailsViewController, animated: true)
     }
 }

@@ -36,6 +36,9 @@
 		48F62E7825FCEE1300DAE7E3 /* DetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F62E7725FCEE1300DAE7E3 /* DetailsViewModel.swift */; };
 		48F62E8925FCEFCF00DAE7E3 /* DetailsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F62E8825FCEFCF00DAE7E3 /* DetailsCoordinator.swift */; };
 		9B888E7E142D231ACC14C4DC /* Pods_DevelopAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6C191365A70468482F5DE8B /* Pods_DevelopAppTests.framework */; };
+		C9FFC26026B53C1000A71489 /* Resolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FFC25F26B53C1000A71489 /* Resolver.swift */; };
+		C9FFC26226B53D2000A71489 /* DependencyGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FFC26126B53D2000A71489 /* DependencyGraph.swift */; };
+		C9FFC26526B5705800A71489 /* TestDependencyGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FFC26426B5705800A71489 /* TestDependencyGraph.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,6 +90,9 @@
 		86ABF6CC15A3C7F9A0F30A43 /* Pods-DevelopAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DevelopAppTests.release.xcconfig"; path = "Target Support Files/Pods-DevelopAppTests/Pods-DevelopAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		8BEC30DD2C62B3119C0723C3 /* Pods-DevelopApp-DevelopAppUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DevelopApp-DevelopAppUITests.release.xcconfig"; path = "Target Support Files/Pods-DevelopApp-DevelopAppUITests/Pods-DevelopApp-DevelopAppUITests.release.xcconfig"; sourceTree = "<group>"; };
 		C6C191365A70468482F5DE8B /* Pods_DevelopAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DevelopAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C9FFC25F26B53C1000A71489 /* Resolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resolver.swift; sourceTree = "<group>"; };
+		C9FFC26126B53D2000A71489 /* DependencyGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyGraph.swift; sourceTree = "<group>"; };
+		C9FFC26426B5705800A71489 /* TestDependencyGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDependencyGraph.swift; sourceTree = "<group>"; };
 		E5C86BB35B3A869C1476228C /* Pods-DevelopApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DevelopApp.debug.xcconfig"; path = "Target Support Files/Pods-DevelopApp/Pods-DevelopApp.debug.xcconfig"; sourceTree = "<group>"; };
 		E635E29C1D6EF2E2B4F6A569 /* Pods-DevelopApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DevelopApp.release.xcconfig"; path = "Target Support Files/Pods-DevelopApp/Pods-DevelopApp.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -180,6 +186,7 @@
 				480F9C012602B576000DBFE2 /* CharactersViewControllerTest.swift */,
 				486AA4EA2603B5EC00BBA835 /* CharactersViewModelTest.swift */,
 				48726A7626A18B1D005A9768 /* NetworkServiceLocal.swift */,
+				C9FFC26426B5705800A71489 /* TestDependencyGraph.swift */,
 			);
 			path = DevelopAppTests;
 			sourceTree = "<group>";
@@ -210,6 +217,8 @@
 				487C523F25FCE38B00D61ACC /* Storyboarded.swift */,
 				487C524825FCE4C800D61ACC /* Bindable.swift */,
 				487C524D25FCE4DB00D61ACC /* GCDBlackBox.swift */,
+				C9FFC25F26B53C1000A71489 /* Resolver.swift */,
+				C9FFC26126B53D2000A71489 /* DependencyGraph.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -446,6 +455,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9FFC26226B53D2000A71489 /* DependencyGraph.swift in Sources */,
 				487C524E25FCE4DB00D61ACC /* GCDBlackBox.swift in Sources */,
 				487C523225FCE34200D61ACC /* Coordinator.swift in Sources */,
 				487C524925FCE4C800D61ACC /* Bindable.swift in Sources */,
@@ -458,6 +468,7 @@
 				48A6F30425FCE6DD00789299 /* CharactersViewController.swift in Sources */,
 				48A6F31725FCEA1A00789299 /* RequestConstant.swift in Sources */,
 				4869017D25FCE2620010AC25 /* AppDelegate.swift in Sources */,
+				C9FFC26026B53C1000A71489 /* Resolver.swift in Sources */,
 				487C522C25FCE31E00D61ACC /* UIView+Nib.swift in Sources */,
 				48CDC0692601122300B66D62 /* CharacterTableViewCell.swift in Sources */,
 				48F62E7825FCEE1300DAE7E3 /* DetailsViewModel.swift in Sources */,
@@ -474,6 +485,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				486AA4EB2603B5EC00BBA835 /* CharactersViewModelTest.swift in Sources */,
+				C9FFC26526B5705800A71489 /* TestDependencyGraph.swift in Sources */,
 				48726A7726A18B1D005A9768 /* NetworkServiceLocal.swift in Sources */,
 				480F9C022602B576000DBFE2 /* CharactersViewControllerTest.swift in Sources */,
 				480F9BF726028133000DBFE2 /* DetailsViewModelSpec.swift in Sources */,

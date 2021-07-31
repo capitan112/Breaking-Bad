@@ -12,7 +12,7 @@ public func endWith<S: Sequence>(_ endingElement: S.Element) -> Predicate<S> whe
         repeat {
             lastItem = item
             item = actualGenerator.next()
-        } while(item != nil)
+        } while item != nil
 
         return PredicateStatus(bool: lastItem == endingElement)
     }
@@ -49,19 +49,19 @@ public func endWith(_ endingSubstring: String) -> Predicate<String> {
 }
 
 #if canImport(Darwin)
-extension NMBPredicate {
-    @objc public class func endWithMatcher(_ expected: Any) -> NMBPredicate {
-        return NMBPredicate { actualExpression in
-            let actual = try actualExpression.evaluate()
-            if actual is String {
-                let expr = actualExpression.cast { $0 as? String }
-                // swiftlint:disable:next force_cast
-                return try endWith(expected as! String).satisfies(expr).toObjectiveC()
-            } else {
-                let expr = actualExpression.cast { $0 as? NMBOrderedCollection }
-                return try endWith(expected).satisfies(expr).toObjectiveC()
+    public extension NMBPredicate {
+        @objc class func endWithMatcher(_ expected: Any) -> NMBPredicate {
+            return NMBPredicate { actualExpression in
+                let actual = try actualExpression.evaluate()
+                if actual is String {
+                    let expr = actualExpression.cast { $0 as? String }
+                    // swiftlint:disable:next force_cast
+                    return try endWith(expected as! String).satisfies(expr).toObjectiveC()
+                } else {
+                    let expr = actualExpression.cast { $0 as? NMBOrderedCollection }
+                    return try endWith(expected).satisfies(expr).toObjectiveC()
+                }
             }
         }
     }
-}
 #endif

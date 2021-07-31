@@ -5,7 +5,6 @@
 //  Created by Oleksiy Chebotarov on 17/03/2021.
 //
 
-
 @testable import DevelopApp
 import Foundation
 import Nimble
@@ -18,14 +17,17 @@ enum JsonDecodingError: Error {
 class DetailsViewModelSpec: QuickSpec {
     var subject: DetailsViewModelType!
     var characters: [Character]!
-    var localDataFetcher: NetworkDataFetcher!
-    
+    @LazyInjected var localDataFetcher: NetworkDataFetcherProtocol
+
     override func spec() {
         describe("fetch characters in ViewModel") {
             context("should get real data of list of characters") {
                 beforeEach {
-                    let networkServiceLocal = NetworkServiceLocal(json: charactersJson)
-                    self.localDataFetcher = NetworkDataFetcher(networkingService: networkServiceLocal)
+                    self.subject = DetailsViewModel()
+                    TestDependencyGraph.registerLocalSerives()
+
+//                    let networkServiceLocal = NetworkServiceLocal(json: charactersJson)
+//                    self.localDataFetcher = NetworkDataFetcher(networkingService: networkServiceLocal)
                     self.localDataFetcher.fetchDetails { response in
                         switch response {
                         case let .success(characters):
@@ -38,8 +40,8 @@ class DetailsViewModelSpec: QuickSpec {
 
                 afterEach {
                     self.subject = nil
-                    self.characters = nil
-                    self.localDataFetcher = nil
+//                    self.characters = nil
+//                    self.localDataFetcher = nil
                 }
 
                 it("first characters properties should be equal") {
@@ -47,7 +49,7 @@ class DetailsViewModelSpec: QuickSpec {
                         fail()
                         return
                     }
-                    self.subject = DetailsViewModel(character: character)
+                    self.subject.character = character
                     let url = URL(string: "https://images.amcnetworks.com/amc.com/wp-content/uploads/2015/04/cast_bb_700x1000_walter-white-lg.jpg")!
                     expect(self.subject.imageURL).to(equal(url))
                     expect(self.subject.name).to(equal("Walter White"))
@@ -59,15 +61,15 @@ class DetailsViewModelSpec: QuickSpec {
                 }
 
                 it("last movies properties should be equal") {
-                    guard let expectedCharacter = self.characters.last else {
+                    guard let character = self.characters.last else {
                         fail()
                         return
                     }
-                    self.subject = DetailsViewModel(character: expectedCharacter)
+                    self.subject.character = character
                     let url = URL(string: "https://vignette.wikia.nocookie.net/breakingbad/images/9/95/JesseS5.jpg/revision/latest?cb=20120620012441")!
                     expect(self.subject.imageURL).to(equal(url))
                     expect(self.subject.name).to(equal("Jesse Pinkman"))
-                    let occupation = expectedCharacter.occupation.joined(separator: "\n")
+                    let occupation = character.occupation.joined(separator: "\n")
                     expect(self.subject.occupation).to(equal(occupation))
                     expect(self.subject.status).to(equal("Status: Alive"))
                     expect(self.subject.status).to(equal("Status: Alive"))

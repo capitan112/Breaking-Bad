@@ -8,6 +8,7 @@
 import Foundation
 
 protocol DetailsViewModelType {
+    var character: Character! { get set }
     var imageURL: URL? { get }
     var name: String { get }
     var occupation: String { get }
@@ -17,6 +18,8 @@ protocol DetailsViewModelType {
 }
 
 class DetailsViewModel: DetailsViewModelType {
+    var character: Character!
+
     var imageURL: URL? {
         return URL(string: character.img)
     }
@@ -41,11 +44,5 @@ class DetailsViewModel: DetailsViewModelType {
     var seasonAppearance: String {
         let seasonAppearance = NSLocalizedString("Season appearance: \n", comment: "Season appearance of charcter")
         return seasonAppearance + character.appearance.map { String($0) }.joined(separator: ", ")
-    }
-
-    private let character: Character
-
-    init(character: Character) {
-        self.character = character
     }
 }

@@ -15,13 +15,9 @@ protocol CharactersViewModelType {
 }
 
 class CharactersViewModel: CharactersViewModelType {
-    private(set) var dataFetcher: NetworkDataFetcherProtocol!
+    @Injected private(set) var dataFetcher: NetworkDataFetcherProtocol
     var characters: Bindable<[Character]?> = Bindable(nil)
-    
-    init(dataFetcher: NetworkDataFetcherProtocol = NetworkDataFetcher()) {
-        self.dataFetcher = dataFetcher
-    }
-    
+
     func fetchData() {
         dataFetcher.fetchDetails(completion: { response in
             guard let characters = try? response.get() else { return }

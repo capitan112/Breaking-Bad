@@ -8,12 +8,7 @@
 import UIKit
 
 class CharactersViewController: UIViewController, Storyboarded {
-    var viewModel: CharactersViewModelType? {
-        didSet {
-            setupBindings()
-        }
-    }
-
+    @LazyInjected var viewModel: CharactersViewModelType
     var coordinator: CharacterDetailsFlow?
     private var characters: [Character]?
     private var searchingCharacters: [Character]?
@@ -36,11 +31,13 @@ class CharactersViewController: UIViewController, Storyboarded {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel.fetchData()
+        setupBindings()
         configNavigationBarTitle()
         hideEpmtyCells()
         configNavigationItems()
     }
-    
+
     private func configNavigationItems() {
         filterButton = createBarButton(title: "Filter", selector: #selector(filterTapped))
         searchButton = createBarButton(title: "Search", selector: #selector(searchTapped))
@@ -68,7 +65,7 @@ class CharactersViewController: UIViewController, Storyboarded {
     }
 
     private func setupBindings() {
-        viewModel?.characters.bind { characters in
+        viewModel.characters.bind { characters in
             if let characters = characters {
                 self.characters = characters
                 self.reloadTableView()
@@ -116,7 +113,7 @@ extension CharactersViewController {
     private func searchedHandler(alert _: UIAlertAction) {
         let userInput = alertController.textFields?[0].text?.lowercased() ?? ""
         if !userInput.isEmpty {
-            searchingCharacters = viewModel?.searchCharacters(by: userInput)
+            searchingCharacters = viewModel.searchCharacters(by: userInput)
             updateStateForMode(isSearchingMode: true)
         } else {
             updateStateForMode(isSearchingMode: false)
@@ -143,7 +140,7 @@ extension CharactersViewController {
         let userInput = alertController.textFields?[0].text ?? "0"
 
         if !userInput.isEmpty, let season = Int(userInput) {
-            searchingCharacters = viewModel?.filterCharacters(by: season)
+            searchingCharacters = viewModel.filterCharacters(by: season)
             updateStateForMode(isFilteringMode: true)
         } else {
             updateStateForMode(isFilteringMode: false)
