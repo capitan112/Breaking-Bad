@@ -7,7 +7,7 @@
 
 import Foundation
 
-final public class DependencyGraph {
+public enum DependencyGraph {
     static func registerAllComponents(for resolver: Resolver = .main) {
         resolver.register { NetworkService() as NetworkProtocol }
         resolver.register { NetworkDataFetcher() as NetworkDataFetcherProtocol }

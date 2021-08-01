@@ -32,13 +32,13 @@ class CharactersViewModelTest: QuickSpec {
 
             it("it should search Characters by name") {
                 var downloadCharacters: [Character] = []
-                
+
                 self.subject.characters.bind { characters in
                     if let characters = characters {
                         downloadCharacters = characters
                     }
                 }
-                
+
                 guard let expectedCharacter = downloadCharacters.first else {
                     fail()
                     return

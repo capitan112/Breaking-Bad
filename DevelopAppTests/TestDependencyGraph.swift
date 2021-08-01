@@ -8,7 +8,7 @@
 @testable import DevelopApp
 import Foundation
 
-final public class TestDependencyGraph {
+public enum TestDependencyGraph {
     static func registerLocalSerives(for resolver: Resolver = .main) {
         resolver.register { NetworkServiceLocal(json: charactersJson) as NetworkProtocol }
         resolver.register { NetworkDataFetcher() as NetworkDataFetcherProtocol }

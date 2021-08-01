@@ -31,8 +31,8 @@ class CharactersViewController: UIViewController, Storyboarded {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.fetchData()
         setupBindings()
+        viewModel.fetchData()
         configNavigationBarTitle()
         hideEpmtyCells()
         configNavigationItems()
