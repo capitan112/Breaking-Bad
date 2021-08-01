@@ -26,8 +26,6 @@ class DetailsViewModelSpec: QuickSpec {
                     self.subject = DetailsViewModel()
                     TestDependencyGraph.registerLocalSerives()
 
-//                    let networkServiceLocal = NetworkServiceLocal(json: charactersJson)
-//                    self.localDataFetcher = NetworkDataFetcher(networkingService: networkServiceLocal)
                     self.localDataFetcher.fetchDetails { response in
                         switch response {
                         case let .success(characters):
@@ -40,8 +38,6 @@ class DetailsViewModelSpec: QuickSpec {
 
                 afterEach {
                     self.subject = nil
-//                    self.characters = nil
-//                    self.localDataFetcher = nil
                 }
 
                 it("first characters properties should be equal") {

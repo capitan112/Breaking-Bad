@@ -11,30 +11,13 @@ import Nimble
 import Quick
 
 class CharactersViewModelTest: QuickSpec {
-    var subject: CharactersViewModel!
-    @LazyInjected var localDataFetcher: NetworkDataFetcherProtocol
-    var characters: [Character]!
+    @LazyInjected var subject: CharactersViewModelType
 
     override func spec() {
         context("when viewModel is loaded") {
             beforeEach {
-                self.subject = CharactersViewModel()
                 TestDependencyGraph.registerLocalSerives()
-
-                self.localDataFetcher.fetchDetails { response in
-                    switch response {
-                    case let .success(characters):
-                        self.characters = characters
-                        self.subject.characters.value = characters
-                    case let .failure(error):
-                        debugPrint(error.localizedDescription)
-                        XCTFail()
-                    }
-                }
-            }
-
-            afterEach {
-                self.characters = nil
+                self.subject.fetchData()
             }
 
             it("it should filter characters by seasons 1") {
@@ -48,7 +31,15 @@ class CharactersViewModelTest: QuickSpec {
             }
 
             it("it should search Characters by name") {
-                guard let expectedCharacter = self.characters.first else {
+                var downloadCharacters: [Character] = []
+                
+                self.subject.characters.bind { characters in
+                    if let characters = characters {
+                        downloadCharacters = characters
+                    }
+                }
+                
+                guard let expectedCharacter = downloadCharacters.first else {
                     fail()
                     return
                 }

@@ -14,6 +14,7 @@ class CharactersViewControllerTest: QuickSpec {
     var subject: CharactersViewController!
     var cell: CharacterTableViewCell!
     @LazyInjected var localDataFetcher: NetworkDataFetcherProtocol
+    
     override func spec() {
         context("when view is loaded") {
             beforeEach {
