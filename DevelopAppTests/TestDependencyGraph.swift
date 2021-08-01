@@ -8,11 +8,8 @@
 @testable import DevelopApp
 import Foundation
 
-public enum TestDependencyGraph {
-    static func registerLocalSerives(for resolver: Resolver = .main) {
+extension DependencyGraph {
+    static func registerLocalNetwork(for resolver: Resolver = .main) {
         resolver.register { NetworkServiceLocal(json: charactersJson) as NetworkProtocol }
-        resolver.register { NetworkDataFetcher() as NetworkDataFetcherProtocol }
-        resolver.register { CharactersViewModel() as CharactersViewModelType }
-        resolver.register { DetailsViewModel() as DetailsViewModelType }
     }
 }

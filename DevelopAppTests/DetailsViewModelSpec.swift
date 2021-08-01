@@ -24,7 +24,8 @@ class DetailsViewModelSpec: QuickSpec {
             context("should get real data of list of characters") {
                 beforeEach {
                     self.subject = DetailsViewModel()
-                    TestDependencyGraph.registerLocalSerives()
+                    DependencyGraph.registerAllComponents()
+                    DependencyGraph.registerLocalNetwork()
 
                     self.localDataFetcher.fetchDetails { response in
                         switch response {

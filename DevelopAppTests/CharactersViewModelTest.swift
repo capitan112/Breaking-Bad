@@ -16,7 +16,8 @@ class CharactersViewModelTest: QuickSpec {
     override func spec() {
         context("when viewModel is loaded") {
             beforeEach {
-                TestDependencyGraph.registerLocalSerives()
+                DependencyGraph.registerAllComponents()
+                DependencyGraph.registerLocalNetwork()
                 self.subject.fetchData()
             }
 

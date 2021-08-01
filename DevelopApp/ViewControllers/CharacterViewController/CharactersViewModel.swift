@@ -8,18 +8,18 @@
 import Foundation
 
 protocol CharactersViewModelType {
-    var characters: Bindable<[Character]?> { get set }
+    var characters: Bindable<[Character]?> { get }
     func fetchData()
     func searchCharacters(by name: String) -> [Character]?
     func filterCharacters(by season: Int) -> [Character]?
 }
 
 class CharactersViewModel: CharactersViewModelType {
-    @Injected private(set) var dataFetcher: NetworkDataFetcherProtocol
-    var characters: Bindable<[Character]?> = Bindable(nil)
+    @OptionalInjected private(set) var dataFetcher: NetworkDataFetcherProtocol?
+    private(set) var characters: Bindable<[Character]?> = Bindable(nil)
 
     func fetchData() {
-        dataFetcher.fetchDetails(completion: { response in
+        dataFetcher?.fetchDetails(completion: { response in
             guard let characters = try? response.get() else { return }
             self.characters.value = characters
         })

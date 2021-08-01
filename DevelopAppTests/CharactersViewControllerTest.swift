@@ -18,7 +18,8 @@ class CharactersViewControllerTest: QuickSpec {
     override func spec() {
         context("when view is loaded") {
             beforeEach {
-                TestDependencyGraph.registerLocalSerives()
+                DependencyGraph.registerAllComponents()
+                DependencyGraph.registerLocalNetwork()
                 self.subject = CharactersViewController.instantiate(storyboardName: "Main")
                 _ = self.subject.view
 
