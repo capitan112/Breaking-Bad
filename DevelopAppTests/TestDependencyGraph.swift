@@ -15,8 +15,4 @@ public enum TestDependencyGraph {
         resolver.register { CharactersViewModel() as CharactersViewModelType }
         resolver.register { DetailsViewModel() as DetailsViewModelType }
     }
-
-    static func registerMockCharactersViewModel(for resolver: Resolver = .main) {
-        resolver.register { MockCharactersViewModel() as CharactersViewModelType }
-    }
 }

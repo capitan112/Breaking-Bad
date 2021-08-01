@@ -19,9 +19,7 @@ class CharactersViewControllerTest: QuickSpec {
         context("when view is loaded") {
             beforeEach {
                 TestDependencyGraph.registerLocalSerives()
-                TestDependencyGraph.registerMockCharactersViewModel()
                 self.subject = CharactersViewController.instantiate(storyboardName: "Main")
-                self.subject.viewModel.fetchData()
                 _ = self.subject.view
 
                 self.cell = self.subject.tableView(self.subject.tableView, cellForRowAt: IndexPath(row: 0, section: 0)) as? CharacterTableViewCell
@@ -33,7 +31,7 @@ class CharactersViewControllerTest: QuickSpec {
             }
 
             it("it should load 2 characters") {
-                expect(self.subject.tableView.numberOfRows(inSection: 0)).toEventually(equal(2))
+                expect(self.subject.tableView.numberOfRows(inSection: 0)).to(equal(2))
             }
 
             it("it should get navigationItem rightBarButton with name filter") {
@@ -58,5 +56,3 @@ class CharactersViewControllerTest: QuickSpec {
         }
     }
 }
-
-class MockCharactersViewModel: CharactersViewModel {}

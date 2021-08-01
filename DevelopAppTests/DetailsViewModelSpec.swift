@@ -32,6 +32,7 @@ class DetailsViewModelSpec: QuickSpec {
                             self.characters = characters
                         case let .failure(error):
                             debugPrint(error.localizedDescription)
+                            fail()
                         }
                     }
                 }

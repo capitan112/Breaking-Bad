@@ -22,7 +22,7 @@ class CharactersViewModelTest: QuickSpec {
 
             it("it should filter characters by seasons 1") {
                 let filteredCharacters = self.subject.filterCharacters(by: 1)
-                expect(filteredCharacters?.count).toEventually(equal(2))
+                expect(filteredCharacters?.count).to(equal(2))
             }
 
             it("it should filter characters by seasons 3") {
