@@ -38,7 +38,7 @@
 		9B888E7E142D231ACC14C4DC /* Pods_DevelopAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6C191365A70468482F5DE8B /* Pods_DevelopAppTests.framework */; };
 		C9FFC26026B53C1000A71489 /* Resolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FFC25F26B53C1000A71489 /* Resolver.swift */; };
 		C9FFC26226B53D2000A71489 /* DependencyGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FFC26126B53D2000A71489 /* DependencyGraph.swift */; };
-		C9FFC26526B5705800A71489 /* TestDependencyGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FFC26426B5705800A71489 /* TestDependencyGraph.swift */; };
+		C9FFC26526B5705800A71489 /* DependencyGraph+LocalNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FFC26426B5705800A71489 /* DependencyGraph+LocalNetwork.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,7 +92,7 @@
 		C6C191365A70468482F5DE8B /* Pods_DevelopAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DevelopAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9FFC25F26B53C1000A71489 /* Resolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resolver.swift; sourceTree = "<group>"; };
 		C9FFC26126B53D2000A71489 /* DependencyGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyGraph.swift; sourceTree = "<group>"; };
-		C9FFC26426B5705800A71489 /* TestDependencyGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDependencyGraph.swift; sourceTree = "<group>"; };
+		C9FFC26426B5705800A71489 /* DependencyGraph+LocalNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DependencyGraph+LocalNetwork.swift"; sourceTree = "<group>"; };
 		E5C86BB35B3A869C1476228C /* Pods-DevelopApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DevelopApp.debug.xcconfig"; path = "Target Support Files/Pods-DevelopApp/Pods-DevelopApp.debug.xcconfig"; sourceTree = "<group>"; };
 		E635E29C1D6EF2E2B4F6A569 /* Pods-DevelopApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DevelopApp.release.xcconfig"; path = "Target Support Files/Pods-DevelopApp/Pods-DevelopApp.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -186,7 +186,7 @@
 				480F9C012602B576000DBFE2 /* CharactersViewControllerTest.swift */,
 				486AA4EA2603B5EC00BBA835 /* CharactersViewModelTest.swift */,
 				48726A7626A18B1D005A9768 /* NetworkServiceLocal.swift */,
-				C9FFC26426B5705800A71489 /* TestDependencyGraph.swift */,
+				C9FFC26426B5705800A71489 /* DependencyGraph+LocalNetwork.swift */,
 			);
 			path = DevelopAppTests;
 			sourceTree = "<group>";
@@ -485,7 +485,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				486AA4EB2603B5EC00BBA835 /* CharactersViewModelTest.swift in Sources */,
-				C9FFC26526B5705800A71489 /* TestDependencyGraph.swift in Sources */,
+				C9FFC26526B5705800A71489 /* DependencyGraph+LocalNetwork.swift in Sources */,
 				48726A7726A18B1D005A9768 /* NetworkServiceLocal.swift in Sources */,
 				480F9C022602B576000DBFE2 /* CharactersViewControllerTest.swift in Sources */,
 				480F9BF726028133000DBFE2 /* DetailsViewModelSpec.swift in Sources */,
